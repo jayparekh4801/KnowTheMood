@@ -5,7 +5,7 @@ from tensorflow import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D
-from keras.optimizers import adamax_v2
+# from keras.optimizers import Adam
 from keras.layers import MaxPooling2D
 from keras.preprocessing.image import ImageDataGenerator
 
@@ -58,15 +58,54 @@ emotion_model.add(Dense(7, activation="softmax"))
 
 #################################### Compiling CNN ############################################
 
-emotion_model.compile(loss='categorical_crossentropy', optimizer=adamax_v2(lr=0.0001, decay=1e-6), metrics=['accuracy'])
+emotion_model.compile(loss='categorical_crossentropy', optimizer="adam", metrics=['accuracy'])
+
+# emotion_detector = emotion_model.fit_generator(
+#                                                 training_set,
+#                                                 steps_per_epoch=28709,
+#                                                 epochs=50,
+#                                                 validation_data=test_set,
+#                                                 validation_steps=7178
+# )
 
 emotion_detector = emotion_model.fit_generator(
                                                 training_set,
-                                                steps_per_epoch=28709,
+                                                steps_per_epoch=100,
                                                 epochs=50,
                                                 validation_data=test_set,
                                                 validation_steps=7178
 )
+emotion_model.save_weights('model.h5')
+
+############################### Detecting Face From Webcam ############################
+
+cv2.ocl_Device.setUseOpenCL(False)
+emotion_dict = {
+    0 : "Angry",
+    1 : "Disgusted",
+    2 : "Fearful",
+    3 : "Happy",
+    4 : "Neutral",
+    5 : "Sad",
+    6 : "Surprised"
+}
+
+cap_vid = cv2.VideoCapture(0)
+
+while(True) :
+
+    ret, frame = cap_vid.read()
+
+    if (not ret) :
+        break
+
+    bounding_box = cv2.CascadeClassifier('faces/faces_deect/haarcascade_frontalface_default.xml')
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    num_faces = bounding_box.detectMultipleScale(gray_frame, scale_factor = 1.3, minNeighbors = 5)
+
+    
+
+
 
 
                                                 
