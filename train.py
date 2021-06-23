@@ -103,7 +103,8 @@ while(True) :
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     num_faces = bounding_box.detectMultipleScale(gray_frame, scale_factor = 1.3, minNeighbors = 5)
 
-    
+    for (x, y, w, h) in num_faces :
+        cv2.Rec
 
 
 
